@@ -1,0 +1,11 @@
+{
+	// 言語ごとの設定
+	// "[vue]": {
+	// 	"editor.defaultFormatter": "Vue.volar"
+	// }
+	"eslint.useFlatConfig": true,
+	"editor.formatOnSave": true,
+	"editor.codeActionsOnSave": {
+		"source.fixAll.eslint": "explicit"
+	}
+}
