@@ -4,8 +4,8 @@
     <header>
       <h1>My Nuxt App</h1>
       <nav>
-        <NuxtLink to="/">Home</NuxtLink> |
-        <NuxtLink to="/about">About</NuxtLink>
+        <NuxtLink to="/contents">List</NuxtLink> |
+        <NuxtLink to="/contents/new">Create</NuxtLink>
       </nav>
     </header>
 
