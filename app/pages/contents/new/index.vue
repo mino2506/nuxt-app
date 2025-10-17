@@ -1,5 +1,18 @@
 <script setup lang="ts">
 import { ref } from "vue"
+import { z } from "zod"
+
+const createContentScehma = z.object({
+  title: z
+    .string()
+    .min(1, "Title is required")
+    .max(100, "Title must be at most 100 characters"),
+  content: z
+    .string()
+    .min(1, "Content is required")
+    .max(1000, "Content must be at most 1000 characters"),
+})
+type CreateContent = z.infer<typeof createContentScehma>
 
 const title = ref("")
 const description = ref("")
@@ -12,18 +25,26 @@ const submitForm = async () => {
   success.value = false
 
   // バリデーション
+  const parsed = createContentScehma.safeParse({
+    title: title.value,
+    content: description.value,
+  })
 
-  if (errors.value.length > 0) return
-
-  try {
-    const res = await $fetch("http://localhost/api/contents", {
-      method: "POST",
-      body: { title: title.value, content: description.value, },
-    })
-    success.value = true
-  } catch (e) {
-    errors.value.push("送信に失敗しました。")
+  if (!parsed.success) {
+    if (errors.value.length > 0) return
+  } else {
+    try {
+      const res = await $fetch("http://localhost/api/contents", {
+        method: "POST",
+        body: { title: title.value, content: description.value, },
+      })
+      success.value = true
+    } catch (e) {
+      errors.value.push("送信に失敗しました。")
+    }
   }
+
+
 }
 </script>
 
