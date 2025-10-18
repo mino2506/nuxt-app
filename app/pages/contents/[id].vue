@@ -8,6 +8,30 @@ const { data, pending, error } = await useFetch(`http://localhost/api/contents/$
 const parsed = contentResponseSchema.safeParse(data.value);
 const item: Content | null = parsed.success ? parsed.data.data : null;
 
+// TODO: Toastで表示するようにする
+async function deleteContent() {
+  if (!item) return;
+
+  if (!confirm("本当に削除しますか？")) return;
+
+  try {
+    const response = await $fetch.raw(`http://localhost/api/contents/${item.id}`, {
+      method: "DELETE",
+    });
+
+    if (response.status !== 204) {
+      alert("Failed to delete content");
+      return;
+    }
+
+    alert("Content deleted successfully");
+
+    await navigateTo("/contents");
+  } catch (e) {
+    alert("An error occurred while deleting the content");
+  }
+}
+
 </script>
 
 <template>
@@ -33,6 +57,25 @@ const item: Content | null = parsed.success ? parsed.data.data : null;
     </div>
   </div>
   <div class="flex justify-center m-4">
-    <NuxtLink to="/contents" class="text-blue-500 hover:underline">Back to Contents List</NuxtLink>
+    <div class="flex-row space-y-4">
+      <div class="flex justify-center">
+        <NuxtLink to="/contents" class="
+      bg-blue-800 text-white px-4 py-2 rounded 
+      hover:bg-blue-400 hover:cursor-pointer
+      ">
+          Back to Contents List
+        </NuxtLink>
+      </div>
+      <div class="flex justify-center">
+        <button @click="deleteContent" class="
+      bg-red-800 text-white px-4 py-2 rounded 
+      hover:bg-red-400 hover:cursor-pointer
+    ">
+          Delete
+        </button>
+      </div>
+
+    </div>
+
   </div>
 </template>
