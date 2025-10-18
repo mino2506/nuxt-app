@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { contentSchema, type Content } from "~/core/schema/contents/contents.dto";
+import { contentResponseSchema, type Content } from "~/core/schema/contents/contents.dto";
 
 const route = useRoute()
 
 const { data, pending, error } = await useFetch(`http://localhost/api/contents/${route.params.id}`)
 
-const parsed = contentSchema.safeParse(data.value);
-const item: Content | null = parsed.success ? parsed.data : null;
+const parsed = contentResponseSchema.safeParse(data.value);
+const item: Content | null = parsed.success ? parsed.data.data : null;
 
 </script>
 
@@ -25,8 +25,8 @@ const item: Content | null = parsed.success ? parsed.data : null;
             <p class="mb-4 p-2 bg-gray-300 text-gray-900">{{ item?.content }}</p>
           </div>
           <div class="flex justify-end space-x-2 mx-2">
-            <p class="text-sm text-gray-700">Created at: {{ item?.created_at }}</p>
-            <p class="text-sm text-gray-700">Updated at: {{ item?.updated_at }}</p>
+            <p class="text-sm text-gray-700">Created at: {{ item?.createdAt }}</p>
+            <p class="text-sm text-gray-700">Updated at: {{ item?.updatedAt }}</p>
           </div>
         </div>
       </div>

@@ -1,14 +1,18 @@
 <script setup lang="ts">
-import { contentArraySchema, type Contents } from "~/core/schema/contents/contents.dto";
+import { contentArrayResponseSchema, type Contents } from "~/core/schema/contents/contents.dto";
 
+// TODO: Composible化
 const { data, pending, error, refresh } = await useFetch('http://localhost/api/contents')
 
-const parsed = contentArraySchema.safeParse(data.value);
-const contents: Contents = parsed.success ? parsed.data.sort((c, p) => c.updated_at > p.updated_at ? -1 : 1) : [];
+const parsed = contentArrayResponseSchema.safeParse(data.value);
+const contents: Contents = parsed.success ? parsed.data.data.sort((c, p) => c.updatedAt > p.updatedAt ? -1 : 1) : [];
 </script>
 
 <template>
   <div>
+    <div>
+      <pre>{{ parsed.error }}</pre>
+    </div>
     <h2 class="text-2xl font-bold mb-4">
       Contents List
     </h2>
@@ -27,8 +31,8 @@ const contents: Contents = parsed.success ? parsed.data.sort((c, p) => c.updated
               </li>
             </div>
             <div class="flex justify-end space-x-2">
-              <div class="text-sm text-gray-500">Created at: {{ item.created_at }}</div>
-              <div class="text-sm text-gray-500">Updated at: {{ item.updated_at }}</div>
+              <div class="text-sm text-gray-500">Created at: {{ item.createdAt }}</div>
+              <div class="text-sm text-gray-500">Updated at: {{ item.updatedAt }}</div>
             </div>
           </div>
         </NuxtLink>

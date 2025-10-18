@@ -1,13 +1,20 @@
-import * as z from 'zod';
+import * as z from "zod";
 
 export const contentSchema = z.object({
   id: z.number(),
   title: z.string(),
   content: z.string(),
-  created_at: z.iso.datetime(),
-  updated_at: z.iso.datetime(),
+  createdAt: z.iso.datetime(),
+  updatedAt: z.iso.datetime(),
 });
 export const contentArraySchema = contentSchema.array();
+
+export const contentResponseSchema = z.object({
+  data: contentSchema,
+});
+export const contentArrayResponseSchema = z.object({
+  data: contentArraySchema,
+});
 
 export type Content = z.infer<typeof contentSchema>;
 export type Contents = z.infer<typeof contentArraySchema>;
