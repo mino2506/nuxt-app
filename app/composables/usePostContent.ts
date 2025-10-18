@@ -1,8 +1,8 @@
-import { reactive, ref } from "vue";
+import { reactive, toRefs } from "vue";
 import { z, ZodError } from "zod";
 
 // Define Zod schema for post content
-const postContentSchema = z.object({
+const postContentFormSchema = z.object({
   title: z
     .string()
     .min(1, "Title is required")
@@ -12,7 +12,7 @@ const postContentSchema = z.object({
     .min(1, "Content is required")
     .max(1000, "Content must be at most 1000 characters"),
 });
-export type PostContentForm = z.infer<typeof postContentSchema>;
+export type PostContentForm = z.infer<typeof postContentFormSchema>;
 
 // Define error types
 type ValidationPostContentError = {
@@ -36,15 +36,18 @@ type PostContentError =
   | UnknownPostContentError;
 
 // Define types for submitPost function result
+type SubmitPostResponseData = {
+  id: number;
+  title: string;
+  content: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
 type SubmitPostSuccess = {
   success: true;
-  data: {
-    id: string;
-    title: string;
-    content: string;
-    createdAt: string;
-    updatedAt: string;
-  };
+  statusCode: number;
+  data: SubmitPostResponseData;
 };
 type SubmitPostFailure = {
   success: false;
@@ -57,59 +60,98 @@ export type SubmitPostResult = SubmitPostSuccess | SubmitPostFailure;
 export function usePostContent(
   submitPost: (data: PostContentForm) => Promise<SubmitPostResult>
 ) {
-  const form = reactive<PostContentForm>({
-    title: "",
-    content: "",
+  type State = {
+    form: PostContentForm;
+    error: PostContentError | null;
+    data: SubmitPostResponseData | null;
+    pending: boolean;
+    success: boolean;
+  };
+  type Event =
+    | { type: "Start" }
+    | { type: "ValidationError"; error: ValidationPostContentError }
+    | { type: "NetworkError"; error: NetworkPostContentError }
+    | { type: "UnknownError"; error: UnknownPostContentError }
+    | { type: "Success"; data: SubmitPostResponseData }
+    | { type: "Finish" };
+
+  const state = reactive<State>({
+    form: { title: "", content: "" },
+    error: null,
+    data: null,
+    pending: false,
+    success: false,
   });
-  const error = ref<PostContentError | null>(null);
-  const pending = ref(false);
-  const success = ref(false);
 
-  error.value = null;
-  const submit = async () => {
+  const reduce = (s: State, ev: Event): State => {
+    switch (ev.type) {
+      case "Start":
+        return { ...s, pending: true, success: false, error: null, data: null };
+      case "ValidationError":
+        return { ...s, error: ev.error, success: false };
+      case "NetworkError":
+        return { ...s, error: ev.error, success: false };
+      case "UnknownError":
+        return { ...s, error: ev.error, success: false };
+      case "Success":
+        return { ...s, success: true, error: null, data: ev.data };
+      case "Finish":
+        return { ...s, pending: false };
+    }
+  };
+
+  const dispatch = (ev: Event) => Object.assign(state, reduce(state, ev));
+
+  const submit = async (): Promise<SubmitPostResult> => {
     try {
-      error.value = null;
-      success.value = false;
+      if (state.pending)
+        return {
+          success: false,
+          statusCode: 409,
+          message: "Already submitting",
+        };
 
-      if (pending.value)
-        return { success: false, statusCode: 0, message: "Already submitting" };
+      dispatch({ type: "Start" });
 
-      const parsed = postContentSchema.safeParse(form);
+      const parsed = postContentFormSchema.safeParse(state.form);
       if (!parsed.success) {
-        error.value = {
+        const error = {
           _tag: "ValidationPostContentError" as const,
           name: parsed.error.name,
           message: parsed.error.message,
           zodErrors: parsed.error,
         } satisfies ValidationPostContentError;
-        return;
-      }
 
-      pending.value = true;
+        dispatch({ type: "ValidationError", error });
+        return { success: false, statusCode: 422, message: "Validation error" };
+      }
 
       const response = await submitPost(parsed.data);
       if (!response.success) {
-        error.value = {
+        const error = {
           _tag: "NetworkPostContentError" as const,
           statusCode: response.statusCode,
           message: response.message,
         } satisfies NetworkPostContentError;
 
-        success.value = false;
+        dispatch({ type: "NetworkError", error });
+        return response;
       }
 
-      error.value = null;
-      success.value = true;
+      dispatch({ type: "Success", data: response.data });
+      return response;
     } catch (e) {
-      error.value = {
+      const error = {
         _tag: "UnknownPostContentError" as const,
         message: "An unknown error occurred during submission",
       } satisfies UnknownPostContentError;
-      success.value = false;
+
+      dispatch({ type: "UnknownError", error });
+      return { success: false, statusCode: 500, message: error.message };
     } finally {
-      pending.value = false;
+      dispatch({ type: "Finish" });
     }
   };
 
-  return { form, error, pending, success, submit };
+  return { ...toRefs(state), submit };
 }

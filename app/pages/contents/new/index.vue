@@ -1,10 +1,89 @@
 <script setup lang="ts">
+import { z } from "zod";
 import { usePostContent } from "#imports"
+import { type PostContentForm, type SubmitPostResult } from "~/composables/usePostContent";
+import type { FetchError } from 'ofetch';
 
-const { form, error, pending, success, submit } = usePostContent((data) => $fetch("http://localhost/api/contents", {
-  method: "POST",
-  body: data,
-}))
+// Define the expected response schema
+const postContentResponseDataSchema = z.object({
+  id: z.number(),
+  title: z.string(),
+  content: z.string(),
+  createdAt: z.iso.datetime(),
+  updatedAt: z.iso.datetime(),
+});
+const postContentResponseSchema = z.object({
+  data: postContentResponseDataSchema,
+});
+
+function isFetchError(e: unknown): e is FetchError {
+  return (
+    typeof e === "object" &&
+    e !== null &&
+    "response" in e &&
+    typeof (e as any).response === "object"
+  );
+}
+
+// Function to submit the post content
+async function submitPost(formData: PostContentForm): Promise<SubmitPostResult> {
+
+  try {
+    const response = await $fetch.raw("http://localhost/api/contents", {
+      method: "POST",
+      body: formData,
+    });
+
+    if (response.status !== 201) {
+      return {
+        success: false,
+        statusCode: response.status,
+        message: "Failed to create content",
+      };
+    }
+
+    if (!response._data) {
+      return {
+        success: false,
+        statusCode: 500,
+        message: "No data returned from server",
+      };
+    }
+
+    const parsed = postContentResponseSchema.safeParse(response._data);
+    if (!parsed.success) {
+      return {
+        success: false,
+        statusCode: 500,
+        message: "Invalid response format from server",
+      };
+    }
+
+    return {
+      success: true,
+      statusCode: response.status,
+      data: parsed.data.data
+    };
+  } catch (e) {
+    if (!isFetchError(e)) {
+      return {
+        success: false,
+        statusCode: 500,
+        message: "An unknown error occurred",
+      };
+    }
+    const fe = e;
+    const status = fe?.response?.status ?? 500;
+    const serverMessage =
+      (fe?.response?._data as any)?.message ??
+      (fe?.data as any)?.message ??
+      (fe?.message ?? "Unknown error");
+
+    return { success: false, statusCode: status, message: String(serverMessage) };
+  }
+}
+
+const { form, error, pending, success, submit } = usePostContent((data) => submitPost(data));
 </script>
 
 <template>
