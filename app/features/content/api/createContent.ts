@@ -6,7 +6,7 @@ import { isFetchError } from "~/utils/isFetchError";
 import { postContentResponseSchema } from "~/features/content/schema/postContent.schema";
 
 // Function to submit the post content
-export async function submitPost(
+export async function submitPostCreateContent(
   formData: PostContentForm
 ): Promise<SubmitPostCreateContentResult> {
   try {

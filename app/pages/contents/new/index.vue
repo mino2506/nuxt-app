@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { usePostContent } from "#imports"
-import { submitPost } from "~/features/content/api/createContent";
+import { submitPostCreateContent } from "~/features/content/api/createContent";
 
-const { form, error, pending, success, submit } = usePostContent((data) => submitPost(data));
+const { form, error, pending, success, submit } = usePostContent((data) => submitPostCreateContent(data));
 </script>
 
 <template>
