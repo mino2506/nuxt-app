@@ -1,33 +1,11 @@
 <script setup lang="ts">
-import { z } from "zod";
 import { usePostContent } from "#imports"
-import { type PostContentForm, type SubmitPostResult } from "~/composables/usePostContent";
-import type { FetchError } from 'ofetch';
-
-// Define the expected response schema
-const postContentResponseDataSchema = z.object({
-  id: z.number(),
-  title: z.string(),
-  content: z.string(),
-  createdAt: z.iso.datetime(),
-  updatedAt: z.iso.datetime(),
-});
-const postContentResponseSchema = z.object({
-  data: postContentResponseDataSchema,
-});
-
-function isFetchError(e: unknown): e is FetchError {
-  return (
-    typeof e === "object" &&
-    e !== null &&
-    "response" in e &&
-    typeof (e as any).response === "object"
-  );
-}
+import type { PostContentForm, SubmitPostCreateContentResult } from "~/features/content/types/postContent.type";
+import { isFetchError } from "~/utils/isFetchError";
+import { postContentResponseSchema } from "~/features/content/schema/postContent.schema";
 
 // Function to submit the post content
-async function submitPost(formData: PostContentForm): Promise<SubmitPostResult> {
-
+async function submitPost(formData: PostContentForm): Promise<SubmitPostCreateContentResult> {
   try {
     const response = await $fetch.raw("http://localhost/api/contents", {
       method: "POST",
@@ -117,7 +95,7 @@ const { form, error, pending, success, submit } = usePostContent((data) => submi
     </form>
 
     <div v-if="error !== null" class="text-red-600 mt-3">
-      <pre>{{ JSON.stringify(error) }}</pre>
+      <pre>{{ JSON.stringify(error._tag) }}</pre>
     </div>
 
     <div v-if="success" class="text-green-600 mt-3">

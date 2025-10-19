@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import * as z from 'zod';
+import { z } from 'zod';
 const { data, pending, error, refresh } = await useFetch('http://localhost/api/contents')
 
 const contentSchema = z.object({

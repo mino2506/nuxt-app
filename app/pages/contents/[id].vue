@@ -1,12 +1,13 @@
 <script setup lang="ts">
-import { contentResponseSchema, type Content } from "~/core/schema/contents/contents.dto";
+import { getContentResponseSchema } from "~/features/content/schema/getContent.schema";;
+import type { GetContentResponseData } from "~/features/content/types/getContent.type";
 
 const route = useRoute()
 
 const { data, pending, error } = await useFetch(`http://localhost/api/contents/${route.params.id}`)
 
-const parsed = contentResponseSchema.safeParse(data.value);
-const item: Content | null = parsed.success ? parsed.data.data : null;
+const parsed = getContentResponseSchema.safeParse(data.value);
+const item: GetContentResponseData | null = parsed.success ? parsed.data.data : null;
 
 // TODO: Toastで表示するようにする
 async function deleteContent() {

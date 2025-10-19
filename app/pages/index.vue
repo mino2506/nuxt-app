@@ -4,7 +4,6 @@
 
 <template>
   <div>
-    aaa
+    Top Page
   </div>
-  <NuxtLink to="/testpage">Go to TestPage</NuxtLink>
 </template>

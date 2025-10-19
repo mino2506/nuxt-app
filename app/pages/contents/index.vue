@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { contentArrayResponseSchema, type Contents } from "~/core/schema/contents/contents.dto";
+import { getContentResponseSchema } from "~/features/content/schema/getContents.schema";
+import type { ContentArrayResponseData } from "~/features/content/types/getContents.type";
 
 // TODO: Composible化
 const { data, pending, error, refresh } = await useFetch('http://localhost/api/contents')
 
-const parsed = contentArrayResponseSchema.safeParse(data.value);
-const contents: Contents = parsed.success ? parsed.data.data.sort((c, p) => c.updatedAt > p.updatedAt ? -1 : 1) : [];
+const parsed = getContentResponseSchema.safeParse(data.value);
+const contents: ContentArrayResponseData = parsed.success ? parsed.data.data.sort((c, p) => c.updatedAt > p.updatedAt ? -1 : 1) : [];
 </script>
 
 <template>
