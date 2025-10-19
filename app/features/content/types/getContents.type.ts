@@ -1,4 +1,4 @@
-import { z } from "zod";
+import type { z } from "zod";
 import { getContentArrayResponseDataSchema } from "~/features/content/schema/getContents.schema";
 
 export type ContentArrayResponseData = z.infer<
