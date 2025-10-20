@@ -3,7 +3,6 @@ import { getContentResponseSchema } from "~/features/content/schema/getContent.s
 import type { GetContentResponseData } from "~/features/content/types/getContent.type";
 
 const route = useRoute()
-
 const { data, pending, error } = await useFetch(`http://localhost/api/contents/${route.params.id}`)
 
 const parsed = getContentResponseSchema.safeParse(data.value);
@@ -68,12 +67,21 @@ async function deleteContent() {
         </NuxtLink>
       </div>
       <div class="flex justify-center">
+        <NuxtLink :to="`/contents/edit/${item?.id}`" class="
+      bg-blue-800 text-white px-4 py-2 rounded 
+      hover:bg-blue-400 hover:cursor-pointer
+      ">
+          Edit
+        </NuxtLink>
+      </div>
+      <div class="flex justify-center">
         <button @click="deleteContent" class="
       bg-red-800 text-white px-4 py-2 rounded 
       hover:bg-red-400 hover:cursor-pointer
     ">
           Delete
         </button>
+
       </div>
 
     </div>
