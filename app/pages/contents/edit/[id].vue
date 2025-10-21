@@ -10,10 +10,18 @@ const { fetchData, fetchPending, fetchError } = await useGetContent(route.params
 
 const { form, error, pending, success, submit } = usePostContent((data) => submitPostCreateContent(data));
 
-if (fetchPending.value === false) {
-  form.value.title = fetchData.value?.title || "";
-  form.value.content = fetchData.value?.content || "";
-}
+const initialized = ref(false)
+
+const stop = watch([fetchPending, fetchData], () => {
+  if (!initialized.value && fetchPending.value === false && fetchData.value) {
+    form.value = {
+      title: fetchData.value.title ?? "",
+      content: fetchData.value.content ?? "",
+    }
+    initialized.value = true
+    stop()
+  }
+}, { immediate: true })
 
 </script>
 
@@ -22,17 +30,21 @@ if (fetchPending.value === false) {
     <h1 class="text-xl font-bold mb-4">Create New Content</h1>
 
     <form @submit.prevent="submit">
-      <div class="mb-3">
+      <div class="flex justify-end mb-3">
         <p class="text-sm text-gray-500">Id: {{ fetchData?.id }}</p>
       </div>
 
       <div class="mb-3">
-        <label>Title</label>
+        <div class="mb-1">
+          <label>Title</label>
+        </div>
         <input v-model="form.title" type="text" class="border w-full p-2 rounded" />
       </div>
 
       <div class="mb-3">
-        <label>Description</label>
+        <div class="mb-1">
+          <label>Description</label>
+        </div>
         <textarea v-model="form.content" class="border w-full p-2 rounded"></textarea>
       </div>
 
@@ -46,6 +58,10 @@ if (fetchPending.value === false) {
         </button>
       </div>
     </form>
+
+    <div v-if="fetchError !== null" class="text-red-600 mt-3">
+      <p>{{ fetchError?.message }}</p>
+    </div>
 
     <div v-if="error !== null" class="text-red-600 mt-3">
       <p>{{ error._tag }}</p>
