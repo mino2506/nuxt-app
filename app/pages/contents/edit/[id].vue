@@ -7,15 +7,13 @@ import { useGetContent } from "~/composables/useGetContent"
 
 const route = useRoute()
 const { fetchData, fetchPending, fetchError } = await useGetContent(route.params.id as string);
-const parsed = getContentResponseSchema.safeParse(fetchData.value);
-const item: GetContentResponseData | null = parsed.success ? parsed.data.data : null;
-
-// alert(JSON.stringify(item));
 
 const { form, error, pending, success, submit } = usePostContent((data) => submitPostCreateContent(data));
 
-form.value.title = item?.title || "";
-form.value.content = item?.content || "";
+if (fetchPending.value === false) {
+  form.value.title = fetchData.value?.title || "";
+  form.value.content = fetchData.value?.content || "";
+}
 
 </script>
 
@@ -25,7 +23,7 @@ form.value.content = item?.content || "";
 
     <form @submit.prevent="submit">
       <div class="mb-3">
-        <p class="text-sm text-gray-500">Id: {{ route.params.id }}</p>
+        <p class="text-sm text-gray-500">Id: {{ fetchData?.id }}</p>
       </div>
 
       <div class="mb-3">
