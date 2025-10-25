@@ -15,9 +15,9 @@ export function useGetContent(id: string | number) {
   });
 
   return {
-    data: data ?? null,
-    pending: pending,
-    error: error,
+    data,
+    pending,
+    error,
     refresh,
   };
 }

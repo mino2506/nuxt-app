@@ -36,10 +36,10 @@ export interface SubmitCore<Form, Data> {
  * - Separation: フォーム値は `form`、結果は `data` に格納し、副作用は `submit()` に集約。
  */
 export function useSubmitFactory<Form, Data>(
-  schema: ZodType<Form, Form>,
+  schema: ZodType<Form>,
   requestFn: (form: Form) => Promise<SubmitResult<Data>>
 ): SubmitCore<Form, Data> {
-  const form: Ref<Form | null> = ref(null); // TODO: 初期値の型安全性の確保
+  const form: Ref<Form | null> = shallowRef(null); // TODO: 初期値の型安全性の確保
   const data: Ref<Data | null> = ref(null);
 
   // 状態管理

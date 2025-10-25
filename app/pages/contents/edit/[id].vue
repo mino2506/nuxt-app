@@ -15,7 +15,8 @@ const {
   submit: patchSubmit
 } = usePatchContent(route.params.id as string)
 
-await until(getData).toBeTruthy();
+// initialize form
+await until(getData).toBeTruthy(); // wait for getData to be available
 patchForm.value = {
   title: getData.value!.title ?? "",
   content: getData.value!.content ?? "",

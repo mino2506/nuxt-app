@@ -7,12 +7,12 @@ import { postContentResponseSchema } from "~/features/content/schema/postContent
 
 // Function to submit the post content
 export async function submitPostContent(
-  formData: PostContentForm
+  form: PostContentForm
 ): Promise<SubmitPostContentResult> {
   try {
     const response = await $fetch.raw("http://localhost/api/contents", {
       method: "POST",
-      body: formData,
+      body: form,
     });
     if (response.status !== 201) {
       return {
