@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { usePostContent } from "#imports"
-import { submitPatchContent } from "~/features/content/api/updateContent";
+import { until } from "@vueuse/core";
 import { useGetContent } from "~/composables/useGetContent"
 import { usePatchContent } from "~/composables/usePatchContent";
 
@@ -16,21 +15,11 @@ const {
   submit: patchSubmit
 } = usePatchContent(route.params.id as string)
 
-const initialized = ref(false)
-
-const stop = watch([getPending, getData], () => {
-  if (!initialized.value
-    && getPending.value === false
-    && getData.value) {
-    patchForm.value = {
-      title: getData.value.title ?? "",
-      content: getData.value.content ?? "",
-    }
-    initialized.value = true
-    stop()
-  }
-}, { immediate: true })
-
+await until(getData).toBeTruthy();
+patchForm.value = {
+  title: getData.value!.title ?? "",
+  content: getData.value!.content ?? "",
+};
 </script>
 
 <template>
