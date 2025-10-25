@@ -1,75 +1,38 @@
-# Nuxt Minimal Starter
+# Nuxt Contents Manager
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+シンプルなコンテンツ CRUD を学習・検証するための Nuxt 3 アプリケーションです。Nuxt の `useFetch`、Zod によるバリデーション、フォーム送信用コンポーザブルなどを組み合わせて、記事の一覧表示・詳細表示・新規作成・編集・削除を行います。
 
-## Setup
+## 主な機能
+- `/contents` でコンテンツ一覧を取得し、更新日時の新しい順で表示
+- `/contents/[id]` で個別のコンテンツ詳細を表示し、削除操作に対応
+- `/contents/new` でタイトルと本文を入力して新規作成
+- `/contents/edit/[id]` で既存コンテンツを編集
+- フォーム送信時は Zod スキーマによる検証と共通の送信ステート管理を利用
 
-Make sure to install dependencies:
-
+## セットアップ
 ```bash
-# npm
-npm install
-
-# pnpm
+# 依存関係のインストール
 pnpm install
 
-# yarn
-yarn install
-
-# bun
-bun install
-```
-
-## Development Server
-
-Start the development server on `http://localhost:3000`:
-
-```bash
-# npm
-npm run dev
-
-# pnpm
+# 開発サーバの起動 (http://localhost:3000)
 pnpm dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
 ```
 
-## Production
-
-Build the application for production:
+### 環境変数
+API のベース URL は `nuxt.config.ts` の `runtimeConfig.public.apiBase` を参照します。デフォルトでは `http://localhost/api` が使用されますが、必要に応じて環境変数を設定してください。
 
 ```bash
-# npm
-npm run build
-
-# pnpm
-pnpm build
-
-# yarn
-yarn build
-
-# bun
-bun run build
+export NUXT_PUBLIC_API_BASE="https://example.com/api"
 ```
 
-Locally preview production build:
-
-```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
+## プロジェクト構成 (抜粋)
+```
+app/
+  app.vue                 # レイアウトとグローバルナビゲーション
+  composables/            # フォーム送信や API 呼び出し用の共通ロジック
+  features/content/       # コンテンツ機能の API / schema / type 定義
+  pages/contents/         # 一覧・詳細・新規作成・編集ページ
 ```
 
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+## テスト
+このテンプレートには自動テストは含まれていません。アプリの挙動確認には開発サーバを起動し、ブラウザで各ページを操作してください。
