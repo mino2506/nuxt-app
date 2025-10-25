@@ -1,20 +1,21 @@
 import type {
-  PostContentForm,
-  SubmitPostContentResult,
-} from "~/features/content/types/postContent.type";
+  PatchContentForm,
+  SubmitPatchContentResult,
+} from "~/features/content/types/patchContent.type";
 import { isFetchError } from "~/utils/isFetchError";
-import { postContentResponseSchema } from "~/features/content/schema/postContent.schema";
+import { patchContentResponseSchema } from "~/features/content/schema/patchContent.schema";
 
 // Function to submit the post content
-export async function submitPostContent(
-  formData: PostContentForm
-): Promise<SubmitPostContentResult> {
+export async function submitPatchContent(
+  id: string | number,
+  form: PatchContentForm
+): Promise<SubmitPatchContentResult> {
   try {
-    const response = await $fetch.raw("http://localhost/api/contents", {
-      method: "POST",
-      body: formData,
+    const response = await $fetch.raw(`http://localhost/api/contents/${id}`, {
+      method: "PATCH",
+      body: form,
     });
-    if (response.status !== 201) {
+    if (response.status !== 200) {
       return {
         success: false,
         statusCode: response.status,
@@ -29,8 +30,8 @@ export async function submitPostContent(
       };
     }
 
-    const parsed = postContentResponseSchema.safeParse(response._data);
-    if (!parsed.success) {
+    const parsedResponse = patchContentResponseSchema.safeParse(response._data);
+    if (!parsedResponse.success) {
       return {
         success: false,
         statusCode: 500,
@@ -41,7 +42,7 @@ export async function submitPostContent(
     return {
       success: true,
       statusCode: response.status,
-      data: parsed.data.data,
+      data: parsedResponse.data.data,
     };
   } catch (e) {
     if (!isFetchError(e)) {

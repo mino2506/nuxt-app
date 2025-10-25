@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { usePostContent } from "#imports"
-import { submitPostCreateContent } from "~/features/content/api/createContent";
+import { submitPostContent } from "~/features/content/api/createContent";
 
-const { form, error, pending, success, submit } = usePostContent((data) => submitPostCreateContent(data));
+const { form, error, pending, success, submit } =
+  usePostContent((data) => submitPostContent(data));
 </script>
 
 <template>
@@ -10,10 +11,6 @@ const { form, error, pending, success, submit } = usePostContent((data) => submi
     <h1 class="text-xl font-bold mb-4">Create New Content</h1>
 
     <form @submit.prevent="submit">
-      <!-- <div class="mb-3">
-        <p class="text-sm text-gray-500">Id: {{ item?.id }}</p>
-      </div> -->
-
       <div class="mb-3">
         <label>Title</label>
         <input v-model="form.title" type="text" class="border w-full p-2 rounded" />

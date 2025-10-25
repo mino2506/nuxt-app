@@ -1,11 +1,8 @@
-import { z } from "zod";
 import { getContentResponseSchema } from "~/features/content/schema/getContent.schema";
 
 export function useGetContent(id: string | number) {
   const config = useRuntimeConfig();
   const url = `/contents/${id}`;
-
-  // console.warn(`${config.public.apiBase}/${url}`);
 
   const { data, pending, error, refresh } = useFetch(url, {
     baseURL: config.public.apiBase,
@@ -18,9 +15,9 @@ export function useGetContent(id: string | number) {
   });
 
   return {
-    fetchData: data ?? null,
-    fetchPending: pending,
-    fetchError: error,
+    data: data ?? null,
+    pending: pending,
+    error: error,
     refresh,
   };
 }

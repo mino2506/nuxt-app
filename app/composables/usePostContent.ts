@@ -7,7 +7,7 @@ import type {
   UnknownPostContentError,
   PostContentError,
   PostContentResponseData,
-  SubmitPostCreateContentResult,
+  SubmitPostContentResult,
 } from "~/features/content/types/postContent.type";
 
 type State = {
@@ -43,7 +43,7 @@ const reduce = (s: State, ev: Event): State => {
 
 // Composable function to handle post content submission
 export function usePostContent(
-  submitPost: (data: PostContentForm) => Promise<SubmitPostCreateContentResult>
+  submitPost: (data: PostContentForm) => Promise<SubmitPostContentResult>
 ) {
   const state = reactive<State>({
     form: { title: "", content: "" },
@@ -55,7 +55,7 @@ export function usePostContent(
 
   const dispatch = (ev: Event) => Object.assign(state, reduce(state, ev));
 
-  const submit = async (): Promise<SubmitPostCreateContentResult> => {
+  const submit = async (): Promise<SubmitPostContentResult> => {
     try {
       if (state.pending)
         return {

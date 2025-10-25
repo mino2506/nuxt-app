@@ -1,9 +1,9 @@
 import type { z, ZodError } from "zod";
 import {
+  postContentFormSchema,
   postContentResponseDataSchema,
   postContentResponseSchema,
 } from "~/features/content/schema/postContent.schema";
-import { postContentFormSchema } from "~/features/content/schema/postContent.schema";
 
 // Request types
 export type PostContentForm = z.infer<typeof postContentFormSchema>;
@@ -15,19 +15,19 @@ export type PostContentResponseData = z.infer<
 export type PostContentResponse = z.infer<typeof postContentResponseSchema>;
 
 // Result types
-export type SubmitPostCreateContentSuccess = {
+export type SubmitPostContentSuccess = {
   success: true;
   statusCode: number;
   data: PostContentResponseData;
 };
-export type SubmitPostCreateContentFailure = {
+export type SubmitPostContentFailure = {
   success: false;
   statusCode: number;
   message: string;
 };
-export type SubmitPostCreateContentResult =
-  | SubmitPostCreateContentSuccess
-  | SubmitPostCreateContentFailure;
+export type SubmitPostContentResult =
+  | SubmitPostContentSuccess
+  | SubmitPostContentFailure;
 
 // Error types
 export type ValidationPostContentError = {
