@@ -11,7 +11,7 @@ export default defineNuxtConfig({
   modules: ["@nuxt/eslint", "@nuxt/ui"],
   runtimeConfig: {
     public: {
-      apiBase: process.env.NUXT_PUBLIC_API_BASE || "http://localhost/api",
+      apiBase: process.env.NUXT_PUBLIC_API_BASE || "http://localhost:8000/api/",
     },
     // server-only 値は public 外に
     // apiSecret: process.env.API_SECRET,
