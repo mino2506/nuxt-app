@@ -11,7 +11,11 @@ export async function submitPatchContent(
   form: PatchContentForm
 ): Promise<SubmitPatchContentResult> {
   try {
-    const response = await $fetch.raw(`http://localhost/api/contents/${id}`, {
+    const config = useRuntimeConfig();
+    const url = `/contents/${id}`;
+    const response = await $fetch.raw(url, {
+      baseURL: config.public.apiBase,
+      key: `content:${id}`,
       method: "PATCH",
       body: form,
     });

@@ -10,7 +10,10 @@ export async function submitPostContent(
   form: PostContentForm
 ): Promise<SubmitPostContentResult> {
   try {
-    const response = await $fetch.raw("http://localhost/api/contents", {
+    const config = useRuntimeConfig();
+    const url = "/contents";
+    const response = await $fetch.raw(url, {
+      baseURL: config.public.apiBase,
       method: "POST",
       body: form,
     });

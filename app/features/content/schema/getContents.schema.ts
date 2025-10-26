@@ -3,6 +3,6 @@ import { getContentResponseDataSchema } from "~/features/content/schema/getConte
 
 export const getContentArrayResponseDataSchema =
   getContentResponseDataSchema.array();
-export const getContentResponseSchema = z.object({
+export const getContentArrayResponseSchema = z.object({
   data: getContentArrayResponseDataSchema,
 });
